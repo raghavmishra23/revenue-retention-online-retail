@@ -11,7 +11,7 @@ AUTHOR = "Raghav Mishra"
 DUPLICATE_COLUMNS = ["Invoice", "StockCode", "Quantity", "InvoiceDate", "Price"]
 HEADER_COLOR = "#1F4E79"
 BAR_COLOR = "#2E75B6"
-MONEY = "#,##0.00"
+MONEY = f'"{get(load_settings(), "project.currency_symbol")}"#,##0.00'
 COUNT = "#,##0"
 PERCENT = "0.00%"
 
@@ -29,6 +29,8 @@ def load_raw_union() -> pd.DataFrame:
     union["Invoice"] = union["Invoice"].astype(str)
     union["StockCode"] = union["StockCode"].astype(str)
     union["Description"] = union["Description"].astype("string")
+    # the same canonicalisation the cleaning step applies, so the audit names markets identically
+    union["Country"] = union["Country"].replace(dict(get(settings, "cleaning.country_overrides")))
     return union
 
 
@@ -213,7 +215,11 @@ def readiness_verdict(df: pd.DataFrame) -> list[str]:
     nulls = flags["Null Customer ID"]
     duplicates = flags["Exact duplicates on invoice, code, quantity, timestamp, price"]
     prices = flags["Price <= 0"]
+    currency = get(load_settings(), "project.currency")
     return [
+        "I built this on the UCI Online Retail II transactional dataset, re-badged to an Indian "
+        f"retail context with values read as {currency} and no rate conversion applied. The "
+        "transaction grain, product catalogue and customer behaviour are the source data's.",
         f"The data is usable once I deal with a few known problems: {nulls:,} rows have no "
         f"customer, {duplicates:,} rows are exact duplicates and {prices:,} rows carry a "
         "price of zero or less.",

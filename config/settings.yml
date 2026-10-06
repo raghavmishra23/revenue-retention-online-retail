@@ -1,6 +1,7 @@
 project:
   name: ecommerce-revenue-intelligence
-  currency: GBP
+  currency: INR
+  currency_symbol: "₹"
 
 dataset:
   slug: mathchi/online-retail-ii-data-set-from-ml-repository
@@ -35,6 +36,7 @@ cleaning:
   adjustment_codes: [M, D, B, CRUK, BANK CHARGES, AMAZONFEE, ADJUST, ADJUST2]
   test_codes: [S, TEST001, TEST002]
   country_overrides:
+    United Kingdom: India
     EIRE: Ireland
     RSA: South Africa
     Korea: South Korea
@@ -97,7 +99,7 @@ country_regions:
   Thailand: Asia-Pacific
   USA: Americas
   United Arab Emirates: Middle East & Africa
-  United Kingdom: United Kingdom
+  India: India
   Unspecified: Unspecified
   West Indies: Americas
 
