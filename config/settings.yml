@@ -3,8 +3,9 @@ project:
   currency: GBP
 
 dataset:
-  slug: mashlyn/online-retail-ii-uci
+  slug: mathchi/online-retail-ii-data-set-from-ml-repository
   raw_filename: online_retail_II.xlsx
+  checksum_filename: checksums.json
   sheets:
     - Year 2009-2010
     - Year 2010-2011

@@ -1,11 +1,14 @@
 import argparse
 from collections.abc import Callable
 
+from src.config import ensure_directories
+from src.ingest.download import download_dataset
 from src.utils.logging import configure_logging, get_logger
 
 
 def run_ingest() -> None:
-    raise NotImplementedError("ingest stage is not built yet")
+    ensure_directories()
+    download_dataset()
 
 
 def run_clean() -> None:

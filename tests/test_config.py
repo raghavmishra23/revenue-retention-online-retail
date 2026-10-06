@@ -5,7 +5,10 @@ from src import config
 
 def test_settings_contain_dataset_slug() -> None:
     settings = config.load_settings()
-    assert config.get(settings, "dataset.slug") == "mashlyn/online-retail-ii-uci"
+    assert (
+        config.get(settings, "dataset.slug")
+        == "mathchi/online-retail-ii-data-set-from-ml-repository"
+    )
 
 
 def test_resolve_path_is_absolute_under_root() -> None:
