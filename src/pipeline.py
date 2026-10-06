@@ -6,6 +6,7 @@ from src.clean.transactions import clean_transactions
 from src.config import ensure_directories
 from src.ingest.download import download_dataset
 from src.utils.logging import configure_logging, get_logger
+from src.warehouse.load import build_warehouse
 
 
 def run_ingest() -> None:
@@ -24,7 +25,8 @@ def run_clean() -> None:
 
 
 def run_warehouse() -> None:
-    raise NotImplementedError("warehouse stage is not built yet")
+    ensure_directories()
+    build_warehouse()
 
 
 def run_all() -> None:

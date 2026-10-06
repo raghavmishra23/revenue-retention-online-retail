@@ -47,6 +47,51 @@ warehouse:
   min_sqlite_version: "3.25"
   unknown_customer_key: -1
 
+country_regions:
+  Australia: Asia-Pacific
+  Austria: Europe
+  Bahrain: Middle East & Africa
+  Belgium: Europe
+  Bermuda: Americas
+  Brazil: Americas
+  Canada: Americas
+  Channel Islands: Europe
+  Cyprus: Europe
+  Czech Republic: Europe
+  Denmark: Europe
+  Ireland: Europe
+  European Community: Europe
+  Finland: Europe
+  France: Europe
+  Germany: Europe
+  Greece: Europe
+  Hong Kong: Asia-Pacific
+  Iceland: Europe
+  Israel: Middle East & Africa
+  Italy: Europe
+  Japan: Asia-Pacific
+  South Korea: Asia-Pacific
+  Lebanon: Middle East & Africa
+  Lithuania: Europe
+  Malta: Europe
+  Netherlands: Europe
+  Nigeria: Middle East & Africa
+  Norway: Europe
+  Poland: Europe
+  Portugal: Europe
+  South Africa: Middle East & Africa
+  Saudi Arabia: Middle East & Africa
+  Singapore: Asia-Pacific
+  Spain: Europe
+  Sweden: Europe
+  Switzerland: Europe
+  Thailand: Asia-Pacific
+  USA: Americas
+  United Arab Emirates: Middle East & Africa
+  United Kingdom: United Kingdom
+  Unspecified: Unspecified
+  West Indies: Americas
+
 logging:
   level: INFO
   format: "%(asctime)s %(levelname)-7s %(name)s | %(message)s"
