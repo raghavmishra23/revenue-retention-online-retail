@@ -47,6 +47,15 @@ warehouse:
   min_sqlite_version: "3.25"
   unknown_customer_key: -1
 
+marts:
+  sql_subdir: 02_marts
+  view_prefix: mart_
+  revenue_tolerance: 0.01
+  expected_totals:
+    gross_revenue: 20094028.49
+    returns: -732084.15
+    net_revenue: 19361944.34
+
 country_regions:
   Australia: Asia-Pacific
   Austria: Europe

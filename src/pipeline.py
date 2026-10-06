@@ -6,6 +6,7 @@ from src.clean.transactions import clean_transactions
 from src.config import ensure_directories
 from src.ingest.download import download_dataset
 from src.utils.logging import configure_logging, get_logger
+from src.warehouse.export import build_marts
 from src.warehouse.load import build_warehouse
 
 
@@ -27,6 +28,7 @@ def run_clean() -> None:
 def run_warehouse() -> None:
     ensure_directories()
     build_warehouse()
+    build_marts()
 
 
 def run_all() -> None:
