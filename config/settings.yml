@@ -21,6 +21,7 @@ paths:
   excel_audit: excel/data_audit.xlsx
   sql: sql
   logs: logs
+  dashboard_data: dashboard/data/dashboard_data.js
 
 cleaning:
   min_unit_price: 0.0

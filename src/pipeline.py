@@ -4,6 +4,7 @@ from collections.abc import Callable
 from src.audit.workbook import build_audit_workbook
 from src.clean.transactions import clean_transactions
 from src.config import ensure_directories
+from src.dashboard.export import export_dashboard_data
 from src.ingest.download import download_dataset
 from src.utils.logging import configure_logging, get_logger
 from src.warehouse.export import build_marts
@@ -25,6 +26,11 @@ def run_clean() -> None:
     clean_transactions()
 
 
+def run_dashboard() -> None:
+    ensure_directories()
+    export_dashboard_data()
+
+
 def run_warehouse() -> None:
     ensure_directories()
     build_warehouse()
@@ -32,7 +38,7 @@ def run_warehouse() -> None:
 
 
 def run_all() -> None:
-    for stage in (run_ingest, run_audit, run_clean, run_warehouse):
+    for stage in (run_ingest, run_audit, run_clean, run_warehouse, run_dashboard):
         stage()
 
 
@@ -41,7 +47,8 @@ STAGES: dict[str, tuple[Callable[[], None], str]] = {
     "audit": (run_audit, "profile the raw workbook into excel/data_audit.xlsx"),
     "clean": (run_clean, "apply cleaning rules, write the DQ report and quarantine"),
     "warehouse": (run_warehouse, "build the star schema and marts, export parquet"),
-    "all": (run_all, "run ingest, audit, clean and warehouse in order"),
+    "dashboard": (run_dashboard, "export the mart json the dashboard page reads"),
+    "all": (run_all, "run every stage in order"),
 }
 
 

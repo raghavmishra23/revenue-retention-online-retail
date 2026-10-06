@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SETTINGS_PATH = PROJECT_ROOT / "config" / "settings.yml"
-FILE_PATH_KEYS = ("warehouse", "excel_audit")
 
 _env_loaded = False
 
@@ -52,4 +51,5 @@ def require_env(name: str) -> str:
 def ensure_directories() -> None:
     for key in load_settings()["paths"]:
         target = resolve_path(key)
-        (target.parent if key in FILE_PATH_KEYS else target).mkdir(parents=True, exist_ok=True)
+        # a settings path with a suffix names a file, so create the folder holding it
+        (target.parent if target.suffix else target).mkdir(parents=True, exist_ok=True)

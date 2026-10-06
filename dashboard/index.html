@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revenue &amp; Customer Intelligence</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <h1>Revenue &amp; Customer Intelligence <span class="thin">&middot; online retail</span></h1>
+      <p class="subtitle" id="subtitle">&nbsp;</p>
+    </div>
+    <div class="nav-cluster">
+      <div class="tabs" role="tablist" aria-label="Dashboard pages">
+        <button role="tab" class="tab is-active" aria-selected="true" data-page="executive">Overview</button>
+        <button role="tab" class="tab" aria-selected="false" data-page="customers">Customers</button>
+        <button role="tab" class="tab" aria-selected="false" data-page="products">Products</button>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme" aria-pressed="true">
+        <span aria-hidden="true" id="theme-icon">&#9681;</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="filters">
+    <label class="field">
+      <span class="field-label">Region</span>
+      <select id="filter-region"><option value="all">All regions</option></select>
+    </label>
+    <label class="field">
+      <span class="field-label">Markets shown</span>
+      <select id="filter-topn">
+        <option value="10">Top 10</option>
+        <option value="20">Top 20</option>
+        <option value="0">All markets</option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field-label">Cohort depth</span>
+      <select id="filter-cohort">
+        <option value="12">12 months</option>
+        <option value="6">6 months</option>
+        <option value="24">24 months</option>
+      </select>
+    </label>
+    <button class="reset" id="filter-reset" type="button">Reset filters</button>
+    <p class="filter-note">Filters select which rows are drawn. Every figure is computed in SQL
+      against the warehouse &mdash; nothing is recalculated here.</p>
+  </div>
+
+  <main>
+    <!-- Overview ------------------------------------------------------- -->
+    <section class="page is-active" id="page-executive" role="tabpanel">
+      <div class="row hero-row">
+        <div class="card hero">
+          <div class="stat-label">Net revenue</div>
+          <div class="stat-value" id="hero-value">&nbsp;</div>
+          <div class="stat-note" id="hero-note">&nbsp;</div>
+          <span class="chip" id="hero-chip"></span>
+        </div>
+        <div class="card">
+          <div class="stat-label">Return rate</div>
+          <div class="stat-value" id="stat-return">&nbsp;</div>
+          <div class="stat-note" id="stat-return-note">&nbsp;</div>
+          <span class="chip" id="stat-return-chip"></span>
+        </div>
+        <div class="card">
+          <div class="stat-label">Orders</div>
+          <div class="stat-value" id="stat-orders">&nbsp;</div>
+          <div class="stat-note" id="stat-orders-note">&nbsp;</div>
+          <span class="chip" id="stat-orders-chip"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Net revenue by month</h2>
+            <p class="card-note">Single axis. The lower panel is month-over-month change on the same
+              timeline, so the two measures never share a scale.</p>
+          </div>
+          <div class="card-tools">
+            <div class="legend" id="trend-legend"></div>
+            <select id="trend-type" aria-label="Trend chart type">
+              <option value="area">Area chart</option>
+              <option value="line">Line chart</option>
+            </select>
+          </div>
+        </div>
+        <div id="chart-trend" class="chart"></div>
+        <div id="chart-mom" class="chart"></div>
+        <p class="note" id="partial-month-note"></p>
+      </div>
+
+      <div class="row split">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Markets</h2>
+              <p class="card-note">Net revenue by country, ranked.</p>
+            </div>
+          </div>
+          <div id="chart-countries" class="chart"></div>
+          <div class="table-wrap"><table id="country-table" class="data-table"></table></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Regions</h2>
+              <p class="card-note">Home market against every export region.</p>
+            </div>
+          </div>
+          <div id="chart-regions" class="chart"></div>
+          <div class="table-wrap"><table id="region-table" class="data-table"></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customers ------------------------------------------------------ -->
+    <section class="page" id="page-customers" role="tabpanel">
+      <div class="row four" id="customer-stats"></div>
+
+      <div class="row even">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>RFM matrix</h2>
+              <p class="card-note">Customers by recency and frequency score. Lighter means more.</p>
+            </div>
+            <div class="legend" id="rfm-legend"></div>
+          </div>
+          <div id="chart-rfm" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Revenue by segment</h2>
+              <p class="card-note">Net revenue attributable to identified customers.</p>
+            </div>
+            <div class="card-tools">
+              <select id="segment-measure" aria-label="Segment measure">
+                <option value="net_revenue">By revenue</option>
+                <option value="customers">By customers</option>
+              </select>
+            </div>
+          </div>
+          <div id="chart-segments" class="chart"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Cohort retention</h2>
+            <p class="card-note">Share of each acquisition cohort still ordering, by months since
+              first purchase. Month 0 is 100% by definition.</p>
+          </div>
+          <div class="legend" id="cohort-legend"></div>
+        </div>
+        <div id="chart-cohort" class="chart"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h2>Segment detail</h2></div></div>
+        <div class="table-wrap"><table id="segment-table" class="data-table"></table></div>
+      </div>
+    </section>
+
+    <!-- Products ------------------------------------------------------- -->
+    <section class="page" id="page-products" role="tabpanel">
+      <div class="row four" id="product-stats"></div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Revenue concentration</h2>
+            <p class="card-note">Cumulative share of net revenue as SKUs are added, best first.</p>
+          </div>
+          <div class="legend" id="pareto-legend"></div>
+        </div>
+        <div id="chart-pareto" class="chart"></div>
+      </div>
+
+      <div class="row even">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Best sellers</h2>
+              <p class="card-note">Top SKUs by net revenue.</p>
+            </div>
+            <div class="card-tools">
+              <select id="product-measure" aria-label="Product measure">
+                <option value="net_revenue">By revenue</option>
+                <option value="units">By units</option>
+              </select>
+            </div>
+          </div>
+          <div id="chart-products" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Return drivers</h2>
+              <p class="card-note">SKUs losing the most value to cancellations.</p>
+            </div>
+          </div>
+          <div id="chart-returns" class="chart"></div>
+          <p class="note" id="reversal-note"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon"><p id="provenance"></p></footer>
+</div>
+
+<div id="tooltip" class="tooltip" role="status" aria-live="polite"></div>
+
+<script src="data/dashboard_data.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
