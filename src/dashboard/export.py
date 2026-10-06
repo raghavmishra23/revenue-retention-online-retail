@@ -1,6 +1,7 @@
 """Shape the marts into the single JSON payload the dashboard page reads."""
 
 import json
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -97,16 +98,40 @@ def rfm_matrix(conn: Any) -> list[dict[str, Any]]:
 
 
 def rfm_segments(conn: Any) -> list[dict[str, Any]]:
+    """Shares are computed here so the page never has to divide or total anything itself."""
     return _rows(
         conn,
         """
+        WITH book AS (
+            SELECT SUM(monetary) AS revenue, COUNT(*) AS customers FROM mart_rfm
+        )
         SELECT segment,
                COUNT(*)                        AS customers,
                ROUND(SUM(monetary), 2)         AS net_revenue,
                ROUND(AVG(monetary), 2)         AS average_value,
                ROUND(AVG(recency_days), 1)     AS average_recency_days,
-               ROUND(AVG(frequency), 1)        AS average_orders
+               ROUND(AVG(frequency), 1)        AS average_orders,
+               ROUND(100.0 * SUM(monetary) / (SELECT revenue FROM book), 2)
+                                               AS revenue_share_pct,
+               ROUND(100.0 * COUNT(*) / (SELECT customers FROM book), 2)
+                                               AS customer_share_pct
         FROM mart_rfm GROUP BY segment ORDER BY net_revenue DESC
+        """,
+    )
+
+
+def segment_rollup(conn: Any, slipping: Sequence[str]) -> dict[str, Any]:
+    """The two roll-ups the overview tiles quote, totalled in SQL rather than in the page."""
+    placeholders = ", ".join("'" + name.replace("'", "''") + "'" for name in slipping)
+    return _one(
+        conn,
+        f"""
+        SELECT ROUND(SUM(monetary), 2) AS attributable_revenue,
+               SUM(CASE WHEN segment IN ({placeholders}) THEN 1 ELSE 0 END)
+                                       AS slipping_customers,
+               ROUND(SUM(CASE WHEN segment IN ({placeholders}) THEN monetary ELSE 0 END), 2)
+                                       AS slipping_revenue
+        FROM mart_rfm
         """,
     )
 
@@ -145,6 +170,8 @@ def pareto_curve(conn: Any) -> dict[str, Any]:
         "rank_at_80": crossing["rank_at_80"],
         "band_skus": band["skus"],
         "band_net_revenue": band["net_revenue"],
+        "band_share_pct": round(100.0 * band["skus"] / total, 2) if total else 0.0,
+        "tail_skus": total - band["skus"],
     }
 
 
@@ -173,7 +200,12 @@ def same_day_reversals(conn: Any) -> dict[str, Any]:
                   AND s.quantity = -c.quantity
             )
         )
-        SELECT COUNT(*) AS lines, ROUND(SUM(line_revenue), 2) AS value FROM reversed
+        SELECT COUNT(*) AS lines,
+               ROUND(SUM(line_revenue), 2) AS value,
+               ROUND(100.0 * SUM(line_revenue) / (
+                   SELECT SUM(line_revenue) FROM sales WHERE is_cancellation = 1
+               ), 2) AS share_of_returns_pct
+        FROM reversed
         """,
     )
 
@@ -230,6 +262,22 @@ def build_payload(conn: Any) -> dict[str, Any]:
         ),
         "pareto": pareto_curve(conn),
         "same_day_reversals": same_day_reversals(conn),
+        "segment_rollup": segment_rollup(conn, get(settings, "dashboard.slipping_segments")),
+        "return_driver_rollup": _one(
+            conn,
+            f"""
+            WITH top_drivers AS (
+                SELECT returns FROM mart_return_leakage
+                WHERE grain = 'product' AND returns < 0
+                ORDER BY returns LIMIT {TOP_LEAKAGE}
+            )
+            SELECT ROUND(SUM(returns), 2) AS returns,
+                   ROUND(100.0 * SUM(returns) / (
+                       SELECT SUM(returns) FROM mart_return_leakage WHERE grain = 'product'
+                   ), 2) AS share_of_returns_pct
+            FROM top_drivers
+            """,
+        ),
         "top_products": _rows(
             conn,
             f"""

@@ -104,6 +104,9 @@ country_regions:
   Unspecified: Unspecified
   West Indies: Americas
 
+dashboard:
+  slipping_segments: [At Risk, Cannot Lose Them]
+
 logging:
   level: INFO
   format: "%(asctime)s %(levelname)-7s %(name)s | %(message)s"

@@ -2777,6 +2777,7 @@ window.DASHBOARD_DATA = {
   },
   "pareto": {
     "band_net_revenue": 15143586.01,
+    "band_share_pct": 21.87,
     "band_skus": 1038,
     "curve": [
       {
@@ -3785,6 +3786,7 @@ window.DASHBOARD_DATA = {
       }
     ],
     "rank_at_80": 1038,
+    "tail_skus": 3708,
     "total_skus": 4746
   },
   "regions": [
@@ -3819,6 +3821,10 @@ window.DASHBOARD_DATA = {
       "region": "Unspecified"
     }
   ],
+  "return_driver_rollup": {
+    "returns": -327272.88,
+    "share_of_returns_pct": 44.7
+  },
   "return_drivers": [
     {
       "return_lines": 1,
@@ -4327,62 +4333,82 @@ window.DASHBOARD_DATA = {
       "average_orders": 15.7,
       "average_recency_days": 19.5,
       "average_value": 7903.51,
+      "customer_share_pct": 25.01,
       "customers": 1464,
       "net_revenue": 11570733.29,
+      "revenue_share_pct": 70.15,
       "segment": "Champions"
     },
     {
       "average_orders": 5.4,
       "average_recency_days": 77.3,
       "average_value": 2004.08,
+      "customer_share_pct": 20.84,
       "customers": 1220,
       "net_revenue": 2444972.89,
+      "revenue_share_pct": 14.82,
       "segment": "Loyal"
     },
     {
       "average_orders": 9.1,
       "average_recency_days": 341.1,
       "average_value": 3879.06,
+      "customer_share_pct": 3.93,
       "customers": 230,
       "net_revenue": 892183.84,
+      "revenue_share_pct": 5.41,
       "segment": "Cannot Lose Them"
     },
     {
       "average_orders": 3.4,
       "average_recency_days": 377.6,
       "average_value": 919.86,
+      "customer_share_pct": 10.22,
       "customers": 598,
       "net_revenue": 550074.31,
+      "revenue_share_pct": 3.34,
       "segment": "At Risk"
     },
     {
       "average_orders": 1.4,
       "average_recency_days": 63.4,
       "average_value": 512.05,
+      "customer_share_pct": 14.16,
       "customers": 829,
       "net_revenue": 424492.73,
+      "revenue_share_pct": 2.57,
       "segment": "Potential Loyalist"
     },
     {
       "average_orders": 1.2,
       "average_recency_days": 554.0,
       "average_value": 394.71,
+      "customer_share_pct": 15.31,
       "customers": 896,
       "net_revenue": 353656.53,
+      "revenue_share_pct": 2.14,
       "segment": "Lost"
     },
     {
       "average_orders": 1.3,
       "average_recency_days": 314.0,
       "average_value": 417.91,
+      "customer_share_pct": 10.54,
       "customers": 617,
       "net_revenue": 257849.26,
+      "revenue_share_pct": 1.56,
       "segment": "Hibernating"
     }
   ],
   "same_day_reversals": {
     "lines": 1762,
+    "share_of_returns_pct": 54.54,
     "value": -399268.39
+  },
+  "segment_rollup": {
+    "attributable_revenue": 16493962.86,
+    "slipping_customers": 828,
+    "slipping_revenue": 1442258.15
   },
   "top_products": [
     {

@@ -105,7 +105,7 @@
     setText("stat-return", pct(k.return_rate_pct, 2));
     setHTML("stat-return-note", exact(-k.returns) + " booked out of " + exact(k.gross_revenue));
     chip("stat-return-chip", "warn",
-      pct(data.same_day_reversals.value / k.returns * 100) + " is same-day reversal");
+      pct(data.same_day_reversals.share_of_returns_pct) + " is same-day reversal");
 
     setText("stat-orders", count(k.orders));
     setHTML("stat-orders-note", "Average order value " + exact(k.aov));
@@ -202,19 +202,10 @@
 
   /* Customers ---------------------------------------------------------- */
 
-  function attributableRevenue() {
-    return data.rfm_segments.reduce(function (sum, s) { return sum + s.net_revenue; }, 0);
-  }
-
   function renderCustomers() {
     var k = data.kpis;
-    var attributable = attributableRevenue();
+    var roll = data.segment_rollup;
     var champions = data.rfm_segments.filter(function (s) { return s.segment === "Champions"; })[0];
-    var slipping = data.rfm_segments.filter(function (s) {
-      return s.segment === "At Risk" || s.segment === "Cannot Lose Them";
-    });
-    var slippingCustomers = slipping.reduce(function (n, s) { return n + s.customers; }, 0);
-    var slippingValue = slipping.reduce(function (n, s) { return n + s.net_revenue; }, 0);
 
     setHTML("customer-stats", [
       statCard("Identified customers", count(k.active_customers),
@@ -223,10 +214,11 @@
         "Net revenue per identified customer", "good",
         pct(k.repeat_purchase_rate_pct) + " buy again"),
       statCard("Champions", count(champions.customers),
-        pct(champions.customers / k.active_customers * 100) + " of customers", "good",
-        pct(champions.net_revenue / attributable * 100) + " of revenue"),
-      statCard("Slipping away", count(slippingCustomers),
-        "At Risk plus Cannot Lose Them", "bad", money(slippingValue) + " at stake")
+        pct(champions.customer_share_pct) + " of customers", "good",
+        pct(champions.revenue_share_pct) + " of revenue"),
+      statCard("Slipping away", count(roll.slipping_customers),
+        "At Risk plus Cannot Lose Them", "bad",
+        money(roll.slipping_revenue) + " at stake")
     ].join(""));
 
     rampLegend("rfm-legend", "fewer&nbsp;", "&nbsp;more");
@@ -252,14 +244,13 @@
       ["Segment", "Customers", "Net revenue", "Share", "Avg value", "Avg orders", "Days since order"],
       data.rfm_segments.map(function (s) {
         return [s.segment, count(s.customers), exact(s.net_revenue),
-          pct(s.net_revenue / attributable * 100, 2), exact(s.average_value),
+          pct(s.revenue_share_pct, 2), exact(s.average_value),
           s.average_orders, s.average_recency_days];
       }));
   }
 
   function renderSegments() {
     var measure = document.getElementById("segment-measure").value;
-    var attributable = attributableRevenue();
     var rows = data.rfm_segments.slice().sort(function (a, b) { return b[measure] - a[measure]; });
     Charts.barsH(document.getElementById("chart-segments"), rows.map(function (s) {
       return {
@@ -271,7 +262,7 @@
         tip: [
           ["Customers", count(s.customers)],
           ["Net revenue", exact(s.net_revenue)],
-          ["Share of revenue", pct(s.net_revenue / attributable * 100, 2)],
+          ["Share of revenue", pct(s.revenue_share_pct, 2)],
           ["Average value", exact(s.average_value)],
           ["Average orders", s.average_orders],
           ["Days since order", s.average_recency_days]
@@ -316,18 +307,18 @@
     var p = data.pareto;
     var k = data.kpis;
     var rev = data.same_day_reversals;
-    var drivers = data.return_drivers.reduce(function (s, d) { return s + d.returns; }, 0);
+    var drivers = data.return_driver_rollup;
 
     setHTML("product-stats", [
       statCard("SKUs sold", count(p.total_skus), "Product lines only", "", ""),
       statCard("Drive 80% of revenue", count(p.band_skus),
-        pct(p.band_skus / p.total_skus * 100) + " of the catalogue", "good",
+        pct(p.band_share_pct) + " of the catalogue", "good",
         money(p.band_net_revenue) + " of net revenue"),
-      statCard("The long tail", count(p.total_skus - p.band_skus),
+      statCard("The long tail", count(p.tail_skus),
         "SKUs carrying the remaining fifth", "", ""),
       statCard("Value booked out", money(k.returns),
-        pct(drivers / k.returns * 100) + " from the top 12 SKUs", "warn",
-        pct(rev.value / k.returns * 100) + " same-day reversal")
+        pct(drivers.share_of_returns_pct) + " from the top 12 SKUs", "warn",
+        pct(rev.share_of_returns_pct) + " same-day reversal")
     ].join(""));
 
     legend("pareto-legend", [
@@ -359,7 +350,7 @@
     setHTML("reversal-note",
       "<strong>Not all of this is a customer return.</strong> " + count(rev.lines) +
       " cancellation lines worth " + money(rev.value) + " (" +
-      pct(rev.value / k.returns * 100) + " of all returned value) reverse an identical order " +
+      pct(rev.share_of_returns_pct) + " of all returned value) reverse an identical order " +
       "placed the same day by the same customer. Those are order-entry corrections, so read " +
       "this as where value is booked out, not where goods come back.");
   }
