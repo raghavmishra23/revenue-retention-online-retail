@@ -1,0 +1,42 @@
+project:
+  name: ecommerce-revenue-intelligence
+  currency: GBP
+
+dataset:
+  slug: mashlyn/online-retail-ii-uci
+  raw_filename: online_retail_II.xlsx
+  sheets:
+    - Year 2009-2010
+    - Year 2010-2011
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  marts: data/processed/marts
+  quarantine: data/quarantine
+  warehouse: data/warehouse.sqlite
+  excel_audit: excel/data_audit.xlsx
+  sql: sql
+  logs: logs
+
+cleaning:
+  min_unit_price: 0.0
+  duplicate_key:
+    - invoice_no
+    - stock_code
+    - quantity
+    - invoice_ts
+    - unit_price
+  shipping_codes: [POST, CARRIAGE, DOT, C2]
+  adjustment_codes: [M, D, B, CRUK, BANK CHARGES, AMAZONFEE, ADJUST]
+  test_codes: [TEST, SAMPLES, PADS]
+
+warehouse:
+  min_sqlite_version: "3.25"
+  unknown_customer_key: -1
+
+logging:
+  level: INFO
+  format: "%(asctime)s %(levelname)-7s %(name)s | %(message)s"
+  datefmt: "%Y-%m-%d %H:%M:%S"
