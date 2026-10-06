@@ -31,10 +31,11 @@ htmlcov/
 .ipynb_checkpoints/
 
 # Databases
-*.duckdb
-*.duckdb.wal
 *.db
+*.sqlite
 *.sqlite3
+*.sqlite-wal
+*.sqlite-shm
 
 # Power BI
 *.pbix.bak
@@ -47,8 +48,5 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
-# Build/agent working files — not part of the deliverable
-CLAUDE.md
-prompt.md
-.claude/
+# Local logs
 logs/
