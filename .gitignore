@@ -1,0 +1,54 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kaggle.json
+
+# Data — regenerate with the pipeline, never commit
+data/raw/
+data/interim/
+data/processed/
+data/quarantine/
+*.xlsx.tmp
+~$*.xlsx
+~$*.pbix
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Databases
+*.duckdb
+*.duckdb.wal
+*.db
+*.sqlite3
+
+# Power BI
+*.pbix.bak
+PowerBIDesktop*.log
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Build/agent working files — not part of the deliverable
+CLAUDE.md
+prompt.md
+.claude/
+logs/
