@@ -7,6 +7,7 @@ from src.utils.logging import get_logger
 
 log = get_logger(__name__)
 
+AUTHOR = "Raghav Mishra"
 DUPLICATE_COLUMNS = ["Invoice", "StockCode", "Quantity", "InvoiceDate", "Price"]
 HEADER_COLOR = "#1F4E79"
 BAR_COLOR = "#2E75B6"
@@ -332,6 +333,13 @@ def build_audit_workbook(output_path: Path | None = None, raw: pd.DataFrame | No
     months = revenue_by_month(union)
     countries = revenue_by_country(union)
     with pd.ExcelWriter(target, engine="xlsxwriter") as writer:
+        writer.book.set_properties(
+            {
+                "title": "Online Retail II data readiness audit",
+                "author": AUTHOR,
+                "comments": "Pre-clean profile and the reconciliation baseline for the pipeline.",
+            }
+        )
         _write_readiness(writer, union)
         _write_table(
             writer,

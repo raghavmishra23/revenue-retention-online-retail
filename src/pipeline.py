@@ -1,6 +1,8 @@
 import argparse
 from collections.abc import Callable
 
+from src.audit.workbook import build_audit_workbook
+from src.clean.transactions import clean_transactions
 from src.config import ensure_directories
 from src.ingest.download import download_dataset
 from src.utils.logging import configure_logging, get_logger
@@ -11,8 +13,14 @@ def run_ingest() -> None:
     download_dataset()
 
 
+def run_audit() -> None:
+    ensure_directories()
+    build_audit_workbook()
+
+
 def run_clean() -> None:
-    raise NotImplementedError("clean stage is not built yet")
+    ensure_directories()
+    clean_transactions()
 
 
 def run_warehouse() -> None:
@@ -20,15 +28,16 @@ def run_warehouse() -> None:
 
 
 def run_all() -> None:
-    for stage in (run_ingest, run_clean, run_warehouse):
+    for stage in (run_ingest, run_audit, run_clean, run_warehouse):
         stage()
 
 
 STAGES: dict[str, tuple[Callable[[], None], str]] = {
     "ingest": (run_ingest, "download the Kaggle dataset into data/raw"),
+    "audit": (run_audit, "profile the raw workbook into excel/data_audit.xlsx"),
     "clean": (run_clean, "apply cleaning rules, write the DQ report and quarantine"),
     "warehouse": (run_warehouse, "build the star schema and marts, export parquet"),
-    "all": (run_all, "run ingest, clean and warehouse in order"),
+    "all": (run_all, "run ingest, audit, clean and warehouse in order"),
 }
 
 

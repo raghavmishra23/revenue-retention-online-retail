@@ -23,15 +23,25 @@ paths:
 
 cleaning:
   min_unit_price: 0.0
+  cancellation_prefix: C
   duplicate_key:
     - invoice_no
     - stock_code
     - quantity
     - invoice_ts
     - unit_price
-  shipping_codes: [POST, CARRIAGE, DOT, C2]
-  adjustment_codes: [M, D, B, CRUK, BANK CHARGES, AMAZONFEE, ADJUST]
-  test_codes: [TEST, SAMPLES, PADS]
+  net_revenue_line_types: [product, shipping]
+  shipping_codes: [POST, DOT, C2]
+  adjustment_codes: [M, D, B, CRUK, BANK CHARGES, AMAZONFEE, ADJUST, ADJUST2]
+  test_codes: [S, TEST001, TEST002]
+  country_overrides:
+    EIRE: Ireland
+    RSA: South Africa
+    Korea: South Korea
+  union_cache_filename: raw_union.parquet
+  transactions_filename: transactions.parquet
+  quarantine_filename: quarantined_rows.parquet
+  dq_report_filename: dq_report.json
 
 warehouse:
   min_sqlite_version: "3.25"
