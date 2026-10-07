@@ -40,6 +40,33 @@ here, in the audit workbook and in the dashboard footer.
 
 `docs/findings.md` carries the full working and the recommendations.
 
+## The dashboard
+
+Three views over the exported marts. No server, no build step, no framework — `index.html` opens
+from the filesystem and reads its data from a JavaScript global the pipeline writes. The page
+formats and selects; it never divides, totals or ranks, so every figure on screen is one a SQL file
+already computed.
+
+**Overview** — the KPI row, net revenue by month with the month-on-month change on a second panel,
+and revenue by market and region.
+
+![Overview: KPI row, monthly net revenue trend, revenue by market and region](docs/images/dashboard-overview.png)
+
+**Customers** — the RFM matrix, revenue by segment, the cohort retention heatmap, and the segment
+table behind the retention argument.
+
+![Customers: RFM matrix, revenue by segment, cohort retention heatmap, segment detail](docs/images/dashboard-customers.png)
+
+**Products** — the Pareto curve with the 80% threshold marked, best sellers, and the SKUs losing
+the most value to cancellations.
+
+![Products: cumulative revenue concentration, best sellers, return drivers](docs/images/dashboard-products.png)
+
+The three filters at the top — region, markets shown, cohort depth — select among pre-computed
+rows rather than recomputing aggregates, which is the honest limit of exporting the answers ahead
+of time. The toggle at the top right switches between the dark and light themes, and `?theme=light`
+forces one on load.
+
 ## Running it
 
 Python 3.12. On Windows, bare `python` is the Store stub, so use the launcher.
@@ -72,6 +99,28 @@ Checks:
 .venv/Scripts/python -m black src tests
 ```
 
+Each stage is independent and reads what the one before it wrote, so a stage can be rerun on its
+own once its input exists. What each one lands:
+
+| Stage | Writes |
+|---|---|
+| `ingest` | `data/raw/online_retail_II.xlsx` plus `data/raw/checksums.json` |
+| `audit` | `excel/data_audit.xlsx`, the reconciliation baseline |
+| `clean` | `transactions.parquet`, `dq_report.json`, `quarantined_rows.parquet` |
+| `warehouse` | `data/warehouse.sqlite` and six mart Parquet files |
+| `dashboard` | `dashboard/data/dashboard_data.js` |
+
+`all` runs the five in order. On my machine `clean`, `warehouse` and `dashboard` take roughly two,
+three and four minutes, so a full rebuild is about ten minutes once the download is cached. The
+pipeline is idempotent — a second run produces byte-identical processed output — so rerunning it
+is always safe.
+
+If a stage fails it fails loudly and stops. The gates are deliberate: row counts must reconcile as
+`raw == kept + deduped + quarantined`, net revenue must agree across the workbook, the Python
+output and the warehouse to within 0.01, `PRAGMA foreign_key_check` must come back empty, and
+cohort retention at offset 0 must be exactly 100%. A plausible wrong number is worse than a stopped
+run.
+
 Open the dashboard by double-clicking `dashboard/index.html`. It has no dependencies and its data
 is a JavaScript global, so it works from the filesystem with no server. If you would rather serve
 it:
@@ -81,6 +130,9 @@ it:
 ```
 
 then open `http://localhost:8000`.
+
+Changing a figure on the page means changing the SQL behind it. Edit the mart in `sql/02_marts/`,
+rerun `warehouse` and then `dashboard`, and the page picks it up on refresh.
 
 ## Architecture in brief
 
@@ -122,7 +174,7 @@ the page. `docs/pipeline.md` has the stage contracts and the quality gates.
 | `sql/03_analysis/` | one query per business question |
 | `dashboard/` | the HTML, CSS and SVG dashboard and its data payload |
 | `tests/` | pytest suite, no network, throwaway SQLite in `tmp_path` |
-| `docs/` | pipeline, decisions, data dictionary, findings |
+| `docs/` | pipeline, data dictionary, findings, and the dashboard screenshots |
 
 ## Limitations
 
