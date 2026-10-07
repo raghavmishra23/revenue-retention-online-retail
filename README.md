@@ -42,7 +42,7 @@ here, in the audit workbook and in the dashboard footer.
 
 ## The dashboard
 
-**Live: https://raghavmishra23.github.io/revenue-retention-online-retail/**
+**Live: https://raghavmishra23.github.io/revenue-retention-online-retail/dashboard/**
 
 Three views over the exported marts. No server, no build step, no framework — `index.html` opens
 from the filesystem and reads its data from a JavaScript global the pipeline writes. The page
@@ -68,13 +68,6 @@ The three filters at the top — region, markets shown, cohort depth — select 
 rows rather than recomputing aggregates, which is the honest limit of exporting the answers ahead
 of time. The toggle at the top right switches between the dark and light themes, and `?theme=light`
 forces one on load.
-
-The hosted copy is the `dashboard/` folder published to a `gh-pages` branch, so the served site and
-the repository copy are the same files. After a rebuild changes the payload, republish with:
-
-```bash
-git subtree push --prefix dashboard origin gh-pages
-```
 
 ## Running it
 
