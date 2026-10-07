@@ -13,7 +13,6 @@ data/processed/
 data/quarantine/
 *.xlsx.tmp
 ~$*.xlsx
-~$*.pbix
 
 # Python
 __pycache__/
@@ -27,19 +26,12 @@ venv/
 .coverage
 htmlcov/
 
-# Notebooks
-.ipynb_checkpoints/
-
 # Databases
 *.db
 *.sqlite
 *.sqlite3
 *.sqlite-wal
 *.sqlite-shm
-
-# Power BI
-*.pbix.bak
-PowerBIDesktop*.log
 
 # Editors / OS
 .vscode/

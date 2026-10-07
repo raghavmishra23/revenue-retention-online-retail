@@ -49,7 +49,7 @@ by_product AS (
     GROUP BY stock_code
 ),
 stacked AS (
-    -- one tidy table, so Power BI slices every grain through a single relationship
+    -- one tidy table, so the dashboard reads every grain from a single mart
     SELECT * FROM by_month
     UNION ALL
     SELECT * FROM by_country
